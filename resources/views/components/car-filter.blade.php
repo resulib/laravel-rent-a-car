@@ -47,7 +47,7 @@
                     <option value="">Hamısı</option>
                     @foreach(FuelType::cases() as $type)
                         <option
-                            value="{{ $type->label() }}" {{ request('fuel_type') == $type->label() ? 'selected' : '' }}>
+                            value="{{ $type->value }}" {{ request('fuel_type') == $type->value ? 'selected' : '' }}>
                             {{ ucfirst($type->label()) }}
                         </option>
                     @endforeach
@@ -60,7 +60,7 @@
                     <option value="">Hamısı</option>
                     @foreach(Transmission::cases() as $type)
                         <option
-                            value="{{ $type->label() }}" {{ request('transmission') == $type->label() ? 'selected' : '' }}>
+                            value="{{ $type->value }}" {{ request('transmission') == $type->value ? 'selected' : '' }}>
                             {{ ucfirst($type->label()) }}
                         </option>
                     @endforeach
@@ -73,7 +73,7 @@
                     <option value="">Hamısı</option>
                     @foreach(Status::cases() as $type)
                         <option
-                            value="{{ $type->label() }}" {{ request('status') == $type->label() ? 'selected' : '' }}>
+                            value="{{ $type->value }}" {{ request('status') == $type->value ? 'selected' : '' }}>
                             {{ ucfirst($type->label()) }}
                         </option>
                     @endforeach

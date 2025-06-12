@@ -60,10 +60,10 @@
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio"
                                    name="fuel_type"
-                                   id="fuel_{{ $fuel->label() }}"
-                                   value="{{ $fuel->label() }}"
-                                {{ old('fuel_type', $car->fuel_type->label()) == $fuel->label() ? 'checked' : '' }}>
-                            <label class="form-check-label" for="fuel_{{ $fuel->label() }}">
+                                   id="fuel_{{ $fuel->value }}"
+                                   value="{{ $fuel->value }}"
+                                {{ old('fuel_type', $car->fuel_type->value) == $fuel->value ? 'checked' : '' }}>
+                            <label class="form-check-label" for="fuel_{{ $fuel->value }}">
                                 {{ ucfirst($fuel->label()) }}
                             </label>
                         </div>
@@ -76,10 +76,10 @@
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio"
                                    name="transmission"
-                                   id="transmission_{{ $type->label() }}"
-                                   value="{{ $type->label() }}"
-                                {{ old('transmission', $car->transmission->label()) == $type->label() ? 'checked' : '' }}>
-                            <label class="form-check-label" for="transmission_{{ $type->label() }}">
+                                   id="transmission_{{ $type->value }}"
+                                   value="{{ $type->value }}"
+                                {{ old('transmission', $car->transmission->value) == $type->value ? 'checked' : '' }}>
+                            <label class="form-check-label" for="transmission_{{ $type->value }}">
                                 {{ ucfirst($type->label()) }}
                             </label>
                         </div>
@@ -94,10 +94,10 @@
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio"
                                    name="status"
-                                   id="status_{{ $status->label() }}"
-                                   value="{{ $status->label() }}"
-                                {{ old('status', $car->status->label()) == $status->label() ? 'checked' : '' }}>
-                            <label class="form-check-label" for="status_{{ $status->label() }}">
+                                   id="status_{{ $status->value }}"
+                                   value="{{ $status->value }}"
+                                {{ old('status', $car->status->value) == $status->value ? 'checked' : '' }}>
+                            <label class="form-check-label" for="status_{{ $status->value }}">
                                 {{ ucfirst($status->label()) }}
                             </label>
                         </div>

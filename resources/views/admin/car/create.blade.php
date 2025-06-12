@@ -62,10 +62,10 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="radio"
                                        name="fuel_type"
-                                       id="fuel_{{ $fuel->label() }}"
-                                       value="{{ $fuel->label() }}"
-                                    {{ old('fuel_type', FuelType::cases()[0]->label()) == $fuel->label() ? 'checked' : '' }}>
-                                <label class="form-check-label" for="fuel_{{ $fuel->label() }}">
+                                       id="fuel_{{ $fuel->value }}"
+                                       value="{{ $fuel->value }}"
+                                    {{ old('fuel_type', FuelType::cases()[0]->value) == $fuel->value ? 'checked' : '' }}>
+                                <label class="form-check-label" for="fuel_{{ $fuel->value }}">
                                     {{ ucfirst($fuel->label()) }}
                                 </label>
                             </div>
@@ -84,8 +84,8 @@
                                 <input class="form-check-input" type="radio"
                                        name="transmission"
                                        id="transmission_{{ $loop->index }}"
-                                       value="{{ $type->label() }}"
-                                    {{ old('transmission', Transmission::cases()[0]->label()) == $type->label() ? 'checked' : '' }}>
+                                       value="{{ $type->value }}"
+                                    {{ old('transmission', Transmission::cases()[0]->value) == $type->value ? 'checked' : '' }}>
                                 <label class="form-check-label" for="transmission_{{ $loop->index }}">
                                     {{ ucfirst($type->label()) }}
                                 </label>
@@ -102,8 +102,8 @@
                                 <input class="form-check-input" type="radio"
                                        name="status"
                                        id="status_{{ $loop->index }}"
-                                       value="{{ $type->label() }}"
-                                    {{ old('status', Status::cases()[0]->label()) == $type->label() ? 'checked' : '' }}>
+                                       value="{{ $type->value }}"
+                                    {{ old('status', Status::cases()[0]->value) == $type->value ? 'checked' : '' }}>
                                 <label class="form-check-label" for="status_{{ $loop->index }}">
                                     {{ ucfirst($type->label()) }}
                                 </label>
