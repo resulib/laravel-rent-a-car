@@ -11,7 +11,7 @@ use App\Models\Car;
 use App\Models\CarModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rule;
 
 class CarController extends Controller
 {
@@ -155,9 +155,9 @@ class CarController extends Controller
             'price_per_day' => 'numeric|required|min:1|max:100000',
             'description' => 'string|max:255',
             'year' => 'required|integer|min:2000|max:' . now()->year,
-            'fuel_type' => ['required', new Enum(FuelType::class)],
-            'transmission' => ['required', new Enum(Transmission::class)],
-            'status' => ['required', new Enum(Status::class)],
+            'fuel_type' => ['required', Rule::enum(FuelType::class)],
+            'transmission' => ['required', Rule::enum(Transmission::class)],
+            'status' => ['required', Rule::enum(Status::class)],
             'image[]' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
@@ -204,9 +204,9 @@ class CarController extends Controller
             'car_model_id' => 'required|exists:car_models,id',
             'year' => 'required|integer|min:2000|max:' . date('Y'),
             'seats' => 'required|integer|min:1|max:10',
-            'fuel_type' => ['required', new Enum(FuelType::class)],
-            'transmission' => ['required', new Enum(Transmission::class)],
-            'status' => ['required', new Enum(Status::class)],
+            'fuel_type' => ['required', Rule::enum(FuelType::class)],
+            'transmission' => ['required', Rule::enum(Transmission::class)],
+            'status' => ['required', Rule::enum(Status::class)],
             'price_per_day' => 'required|numeric|min:0',
             'description' => 'required|string|max:2000',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',

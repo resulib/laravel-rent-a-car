@@ -46,13 +46,13 @@ class Car extends Model
         return trim("$brand $model $this->year");
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::created(function ($car) {
-            $car->slug = Str::slug($car->getFullName() . '-' . $car->id);
-            $car->save();
-        });
-    }
+//    protected static function boot(): void
+//    {
+//        parent::boot();
+//
+//        static::created(function ($car) {
+//            $car->slug = Str::slug($car->getFullName() . '-' . $car->id);
+//            $car->save();
+//        });
+//    }
 }
