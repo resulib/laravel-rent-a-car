@@ -27,13 +27,12 @@
 
             <div class="mb-3">
                 <label class="form-label">Slug</label>
-                <input type="text" name="slug" value="{{ old('slug', $page->slug) }}" class="form-control" required>
+                <input type="text" name="slug" value="{{ old('slug', $page->slug) }}" class="form-control" >
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Məzmun</label>
-                <textarea name="content" class="form-control" rows="8"
-                          required>{{ old('content', $page->content) }}</textarea>
+                <textarea name="content" class="form-control" rows="8">{{ old('content', $page->content) }}</textarea>
             </div>
 
             <div class="form-check form-switch mb-3">

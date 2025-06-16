@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Page;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PageController extends Controller
 {
@@ -20,23 +21,26 @@ class PageController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'slug' => 'required|unique:pages',
-            'content' => 'required'
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:pages,slug',
+            'content' => 'nullable|string',
+            'is_active' => 'nullable|in:0,1',
         ]);
 
         $page = new Page();
-        $page->title = $request->title;
-        $page->slug = $request->slug;
-        $page->content = $request->content;
-        $page->is_active = $request->is_active;
+        $page->title = $validated['title'];
+        $page->slug = $validated['slug'] ?? null;
+        $page->content = $validated['content'] ?? null;
+        $page->is_active = $validated['is_active'] ?? 0;
 
         if ($page->save()) {
-            return redirect()->route('admin.pages.index')->with('success', 'Səhifə yaradıldı.');
+            return redirect()->route('admin.pages.index')
+                ->with('success', 'Səhifə yaradıldı.');
         }
-        return redirect()->route('admin.pages.create')->with('error', 'Xeta bas verdi.');
 
+        return redirect()->route('admin.pages.create')
+            ->with('error', 'Xəta baş verdi.');
     }
 
     public function edit(Page $page)
@@ -46,16 +50,20 @@ class PageController extends Controller
 
     public function update(Request $request, Page $page)
     {
-        $request->validate([
-            'title' => 'required',
-            'slug' => 'required|unique:pages,slug,' . $page->id,
-            'content' => 'required'
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => [
+                'nullable',
+                'string',
+                'max:255',
+                'regex:/^[a-z0-9-]+$/',
+                Rule::unique('pages', 'slug')->ignore($page->id),
+            ],
+            'content' => 'nullable|string',
         ]);
 
-        $page->title = $request->title;
-        $page->slug = $request->slug;
-        $page->content = $request->content;
-        $page->is_active = $request->is_active;
+
+        $page->update($validated);
 
         if ($page->save()) {
             return redirect()->route('admin.pages.index')->with('success', 'Səhifə ugurla yeniləndi.');

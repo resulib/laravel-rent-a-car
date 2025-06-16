@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\API\CarController;
 use App\Http\Controllers\Api\CarModelController;
+use App\Http\Controllers\Api\PageController;
 use App\Models\Brand;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +22,8 @@ Route::prefix('v1')->group(function () {
 //    Route::delete('/brands/{id}', [BrandController::class, 'destroy']);
 
     Route::apiResource('brands', BrandController::class);
-
     Route::apiResource('models', CarModelController::class);
+    Route::apiResource('pages', PageController::class);
 
+    Route::post('login', [AdminController::class, 'login']);
 });
