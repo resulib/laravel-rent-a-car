@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Exceptions\ApiModelNotFoundException;
 use App\Models\Car;
 use App\Observers\CarObserver;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,9 +13,9 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register(): void
+
+    public function register()
     {
-        //
     }
 
     /**

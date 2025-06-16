@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Exceptions\CarNotFoundException;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCarRequest;
@@ -10,6 +9,7 @@ use App\Http\Requests\UpdateCarRequest;
 use App\Http\Resources\CarResource;
 use App\Models\Car;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CarController extends Controller
 {
@@ -19,57 +19,52 @@ class CarController extends Controller
         return CarResource::collection(Car::paginate());
     }
 
-    public function store(StoreCarRequest $request)
-    {
-        $car = Car::create($request->validated());
-        return new CarResource($car);
-    }
 
     public function show(string $id)
     {
         $car = $this->getCar($id);
-        if (!$car) {
-            return new CarNotFoundException();
-        }
         return new CarResource($car);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCarRequest $request, string $id)
+    public function store(StoreCarRequest $request)
     {
-        $car = Car::findOrFail($id);
-
-        $updated = $car->update($request->validated());
-
-        if ($updated) {
-            return ApiResponse::success("Car updated successfully");
+        try {
+            Car::create($request->validated());
+            return ApiResponse::success('Car created successfully', 201);
+        } catch (\Exception $e) {
+            return ApiResponse::error('Error creating car', 500);
         }
-        return ApiResponse::error("Failed to update car");
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    public function update(UpdateCarRequest $request, string $id)
+    {
+        try {
+            $car = Car::findOrFail($id);
+            $updated = $car->update($request->validated());
+
+        } catch (ModelNotFoundException $e) {
+            throw new HttpResponseException(response()->json([
+                'status' => 'error',
+                'message' => "Car not found with id: $id"
+            ], 404));
+        }
+
+        if ($updated) {
+            return ApiResponse::success("Car updated successfully", 200);
+        }
+        return ApiResponse::error("Error updating car", 422);
+    }
+
     public function destroy(string $id)
     {
-        $car = $this->getCar($id);
-        if ($car->delete()) {
-            return ApiResponse::success("Car deleted successfully");
+        if ($this->getCar($id)) {
+            return ApiResponse::success("Car deleted successfully", 200);
         }
-        return ApiResponse::error("Car could not be deleted");
+        return ApiResponse::error("Error deleting car", 422);
     }
 
     private function getCar($id)
     {
-        try {
-            return Car::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => "Car not found with id: $id",
-            ], 404);
-        }
+        return findModelOrFail(Car::class, $id);
     }
 }
