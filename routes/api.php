@@ -1,14 +1,15 @@
 <?php
 
-use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\API\CarController;
 use App\Http\Controllers\Api\CarModelController;
 use App\Http\Controllers\Api\PageController;
 use App\Models\Brand;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1')->group(function () {
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/cars', [CarController::class, 'index']);
     Route::get('/cars/{id}', [CarController::class, 'show']);
     Route::post('/cars', [CarController::class, 'store']);
@@ -25,5 +26,10 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('models', CarModelController::class);
     Route::apiResource('pages', PageController::class);
 
-    Route::post('login', [AdminController::class, 'login']);
+    Route::get('/user', fn(Request $request) => $request->user());
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
+
+Route::post('login', [AuthController::class, 'login']);
+
+

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\HomeController;
@@ -19,13 +19,13 @@ Route::prefix('/cars')->name('user.')->group(function () {
 
 Route::get('/{page:slug}', [PageController::class, 'show'])->name('page.show');
 
-Route::get('admin/login', [AdminController::class, 'login'])->name('login');
-Route::post('admin/login', [AdminController::class, 'loginPost'])->name('login.post');
+Route::get('admin/login', [AuthController::class, 'login'])->name('login');
+Route::post('admin/login', [AuthController::class, 'loginPost'])->name('login.post');
 
 
 
 Route::middleware(['web', 'auth', IsAdmin::class])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
     Route::get('brands', [BrandController::class, 'index'])->name('brand.index');
     Route::get('brands/create', [BrandController::class, 'create'])->name('brand.create');
@@ -57,7 +57,7 @@ Route::middleware(['web', 'auth', IsAdmin::class])->prefix('admin')->name('admin
     Route::put('pages/{page}', [PageController::class, 'update'])->name('pages.update');
     Route::delete('pages/{page}', [PageController::class, 'destroy'])->name('pages.destroy');
 
-    Route::get('logout', [AdminController::class, 'logout'])->name('logout');
+    Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 });
 
 
