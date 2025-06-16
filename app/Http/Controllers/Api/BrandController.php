@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Exceptions\ApiModelNotFoundException;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
 use App\Http\Resources\BrandResource;
 use App\Models\Brand;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use Mockery\Exception;
 
 class BrandController extends Controller
 {
@@ -26,22 +24,19 @@ class BrandController extends Controller
 
     public function store(StoreBrandRequest $request)
     {
-        if (Brand::create($request->validated())) {
+        try {
+            Brand::create($request->validated());
             return ApiResponse::success("Brand created successfully", 201);
+        } catch (Exception $e) {
+            return ApiResponse::error("Error creating brand: " . $e->getMessage(), 422);
         }
-        return ApiResponse::error("Error creating brand", 422);
     }
-
 
     public function update(UpdateBrandRequest $request, Brand $brand)
     {
         try {
             $brand->update($request->validated());
             return ApiResponse::success("Brand updated successfully", 200);
-
-        } catch (ModelNotFoundException $e) {
-            return ApiResponse::error("Brand not found with id: {$brand->id}", 404);
-
         } catch (\Exception $e) {
             return ApiResponse::error("Error updating brand: " . $e->getMessage(), 500);
         }
@@ -49,10 +44,12 @@ class BrandController extends Controller
 
     public function destroy(Brand $brand)
     {
-        if ($brand->delete()) {
+        try {
+            $brand->delete();
             return ApiResponse::success("Brand deleted successfully", 200);
+        } catch (\Exception $e) {
+            return ApiResponse::error("Error deleting brand: " . $e->getMessage(), 422);
         }
-        return ApiResponse::error("Error deleting car", 422);
     }
 
     private function getBrand($id)

@@ -41,7 +41,6 @@ class CarController extends Controller
         try {
             $car = Car::findOrFail($id);
             $updated = $car->update($request->validated());
-
         } catch (ModelNotFoundException $e) {
             throw new HttpResponseException(response()->json([
                 'status' => 'error',
