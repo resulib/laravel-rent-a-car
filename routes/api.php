@@ -1,16 +1,16 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\BrandController;
-use App\Http\Controllers\API\CarController;
-use App\Http\Controllers\Api\CarModelController;
-use App\Http\Controllers\Api\PageController;
-use App\Models\Brand;
+use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\BrandController;
+use App\Http\Controllers\Api\V1\CarController;
+use App\Http\Controllers\Api\V1\CarModelController;
+use App\Http\Controllers\Api\V1\PageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/cars', [CarController::class, 'index']);
+    Route::get('/cars/search', [CarController::class, 'search']);
     Route::get('/cars/{id}', [CarController::class, 'show']);
     Route::post('/cars', [CarController::class, 'store']);
     Route::put('/cars/{id}', [CarController::class, 'update']);

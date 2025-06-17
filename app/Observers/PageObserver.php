@@ -15,11 +15,9 @@ class PageObserver
             $slug = $baseSlug;
             $i = 1;
 
-            // Slug təkrarlanmasın deyə yoxlama
             while (Page::where('slug', $slug)->exists()) {
                 $slug = $baseSlug . '-' . $i++;
             }
-
             $page->slug = $slug;
         }
     }
@@ -34,7 +32,6 @@ class PageObserver
             while (Page::where('slug', $slug)->where('id', '!=', $page->id)->exists()) {
                 $slug = $baseSlug . '-' . $i++;
             }
-
             $page->slug = $slug;
         }
     }

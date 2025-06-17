@@ -8,7 +8,7 @@ use App\Enums\Transmission;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class Car extends Model
+class  Car extends Model
 {
 
     protected $fillable = [
@@ -46,13 +46,4 @@ class Car extends Model
         return trim("$brand $model $this->year");
     }
 
-//    protected static function boot(): void
-//    {
-//        parent::boot();
-//
-//        static::created(function ($car) {
-//            $car->slug = Str::slug($car->getFullName() . '-' . $car->id);
-//            $car->save();
-//        });
-//    }
 }

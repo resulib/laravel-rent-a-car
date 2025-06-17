@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
@@ -19,7 +19,13 @@ class BrandController extends Controller
 
     public function show(Brand $brand)
     {
-        return new BrandResource($brand);
+        try {
+            return new BrandResource($brand);
+        }catch (Exception $e){
+            return response()->json([
+                'error'=>'error'
+            ]);
+        }
     }
 
     public function store(StoreBrandRequest $request)
@@ -38,7 +44,7 @@ class BrandController extends Controller
             $brand->update($request->validated());
             return ApiResponse::success("Brand updated successfully", 200);
         } catch (\Exception $e) {
-            return ApiResponse::error("Error updating brand: " . $e->getMessage(), 500);
+            return ApiResponse::error("Error updating brand: " . $e->getMessage(), 422);
         }
     }
 
@@ -50,10 +56,5 @@ class BrandController extends Controller
         } catch (\Exception $e) {
             return ApiResponse::error("Error deleting brand: " . $e->getMessage(), 422);
         }
-    }
-
-    private function getBrand($id)
-    {
-        return findModelOrFail(Brand::class, $id,);
     }
 }
