@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/cars', [CarController::class, 'index']);
-    Route::get('/cars/search', [CarController::class, 'search']);
+    Route::get('/cars/search', [CarController::class, 'searchAndFilter']);
     Route::get('/cars/{car}', [CarController::class, 'show']);
     Route::post('/cars', [CarController::class, 'store']);
     Route::put('/cars/{car}', [CarController::class, 'update']);

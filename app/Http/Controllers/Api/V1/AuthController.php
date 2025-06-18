@@ -5,36 +5,29 @@ namespace App\Http\Controllers\Api\V1;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+
+    protected AuthService $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     public function login(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
-        if (!Auth::attempt($credentials)) {
-            return ApiResponse::error('Invalid credentials', 401);
-        }
 
-        $user = Auth::user();
-
-        if (!$user->is_admin) {
-            Auth::logout();
-            return ApiResponse::error('Unauthorized', 403);
-        }
-
-        $token = $user->createToken('admin-token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Login successful',
-            'token' => $token,
-        ]);
+        return $this->authService->login($credentials);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $this->authService->logout($request);
         return ApiResponse::success('Logged out successfully');
     }
 }
