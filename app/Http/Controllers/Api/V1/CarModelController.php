@@ -8,23 +8,32 @@ use App\Http\Requests\StoreCarModelRequest;
 use App\Http\Requests\UpdateCarModelRequest;
 use App\Http\Resources\CarModelResource;
 use App\Models\CarModel;
+use App\Services\CarModelService;
 
 class CarModelController extends Controller
 {
+
+    protected CarModelService $carModelService;
+
+    public function __construct(CarModelService $carModelService)
+    {
+        $this->carModelService = $carModelService;
+    }
+
     public function index()
     {
-        return CarModelResource::collection(CarModel::paginate(10));
+        return CarModelResource::collection($this->carModelService->getAll());
     }
 
     public function show(CarModel $model)
     {
-        return new CarModelResource($model);
+        return new CarModelResource($this->carModelService->getCarModel($model));
     }
 
     public function store(StoreCarModelRequest $request)
     {
         try {
-            CarModel::create($request->validated());
+            $this->carModelService->createCarModel($request);
             return ApiResponse::success("Model created successfully", 201);
         } catch (\Exception $e) {
             return ApiResponse::error("Error creating model: " . $e->getMessage(), 422);
@@ -34,9 +43,9 @@ class CarModelController extends Controller
     public function update(UpdateCarModelRequest $request, CarModel $model)
     {
         try {
-            $model->update($request->validated());
+            $this->carModelService->updateCarModel($request, $model);
             return ApiResponse::success("Model updated successfully", 200);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return ApiResponse::error("Error updating model: " . $e->getMessage(), 422);
         }
     }
@@ -44,7 +53,7 @@ class CarModelController extends Controller
     public function destroy(CarModel $model)
     {
         try {
-            $model->delete();
+            $this->carModelService->deleteCarModel($model);
             return ApiResponse::success("Model deleted successfully", 200);
         } catch (\Exception $e) {
             return ApiResponse::error("Error deleting model: " . $e->getMessage(), 422);
