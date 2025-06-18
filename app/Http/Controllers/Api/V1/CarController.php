@@ -8,124 +8,65 @@ use App\Http\Requests\StoreCarRequest;
 use App\Http\Requests\UpdateCarRequest;
 use App\Http\Resources\CarResource;
 use App\Models\Car;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Services\CarService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Mockery\Exception;
 
 class CarController extends Controller
 {
 
+    protected CarService $carService;
+
+    public function __construct(CarService $carService)
+    {
+        $this->carService = $carService;
+    }
+
     public function index()
     {
-        return CarResource::collection(Car::paginate());
+        return CarResource::collection($this->carService->getAll());
     }
 
-    public function search(Request $request)
+    public function searchAndFilter(Request $request): JsonResponse
     {
-        $query = Car::query()->with(['model.brand']);
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->whereHas('model', function ($q) use ($search) {
-                    $q->where('name', 'like', "%$search%")
-                        ->where('is_active', 1);
-                })->orWhereHas('model.brand', function ($q) use ($search) {
-                    $q->where('name', 'like', "%$search%")
-                        ->where('is_active', 1);
-                });
-            });
-        }
-
-        if ($request->filled('brand')) {
-            $query->whereHas('model.brand', function ($q) use ($request) {
-                $q->where('id', $request->brand)
-                    ->where('is_active', 1);
-            });
-        }
-
-        if ($request->filled('fuel_type')) {
-            $query->where('fuel_type', $request->fuel_type);
-        }
-
-        if ($request->filled('transmission')) {
-            $query->where('transmission', $request->transmission);
-        }
-
-        if ($request->filled('year')) {
-            $query->where('year', $request->year);
-        }
-
-        if ($request->filled('min_price')) {
-            $query->where('price_per_day', '>=', $request->min_price);
-        }
-
-        if ($request->filled('max_price')) {
-            $query->where('price_per_day', '<=', $request->max_price);
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        $cars = $query->latest()->paginate(8);
-
-        return response()->json([
-            'cars' => CarResource::collection($cars),
-            'pagination' => [
-                'total' => $cars->total(),
-                'per_page' => $cars->perPage(),
-                'current_page' => $cars->currentPage(),
-                'last_page' => $cars->lastPage(),
-            ]
-        ]);
+        return $this->carService->searchAndFilter($request);
     }
 
 
-    public function show(string $id)
+    public function show(Car $car)
     {
-        $car = $this->getCar($id);
-        return new CarResource($car);
+        return $this->carService->getCar($car);
     }
 
     public function store(StoreCarRequest $request)
     {
         try {
-            Car::create($request->validated());
+            $this->carService->createCar($request);
             return ApiResponse::success('Car created successfully', 201);
         } catch (\Exception $e) {
             return ApiResponse::error('Error creating car', 500);
         }
     }
 
-    public function update(UpdateCarRequest $request, string $id)
+    public function update(UpdateCarRequest $request, Car $car)
     {
         try {
-            $car = Car::findOrFail($id);
-            $updated = $car->update($request->validated());
-        } catch (ModelNotFoundException $e) {
-            throw new HttpResponseException(response()->json([
-                'status' => 'error',
-                'message' => "Car not found with id: $id"
-            ], 404));
-        }
-
-        if ($updated) {
+            $this->carService->updateCar($request, $car);
             return ApiResponse::success("Car updated successfully", 200);
+        } catch (Exception $e) {
+            return ApiResponse::error("Error updating car", 422);
         }
-        return ApiResponse::error("Error updating car", 422);
     }
 
-    public function destroy(string $id)
+    public function destroy(Car $car)
     {
-        if ($this->getCar($id)) {
+        try {
+            $this->carService->deleteCar($car);
             return ApiResponse::success("Car deleted successfully", 200);
+        } catch (\Exception $e) {
+            return ApiResponse::error("Error deleting car: " . $e->getMessage(), 422);
         }
-        return ApiResponse::error("Error deleting car", 422);
     }
 
-    private function getCar($id)
-    {
-        return findModelOrFail(Car::class, $id);
-    }
 }

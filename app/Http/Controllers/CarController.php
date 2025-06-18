@@ -71,7 +71,7 @@ class CarController extends Controller
     }
 
 
-    public function adminIndex(Request $request)
+    public function searchAndFilter(Request $request)
     {
         $query = Car::query()->with(['model.brand']);
 

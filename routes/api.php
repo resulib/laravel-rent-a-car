@@ -11,10 +11,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/cars', [CarController::class, 'index']);
     Route::get('/cars/search', [CarController::class, 'search']);
-    Route::get('/cars/{id}', [CarController::class, 'show']);
+    Route::get('/cars/{car}', [CarController::class, 'show']);
     Route::post('/cars', [CarController::class, 'store']);
-    Route::put('/cars/{id}', [CarController::class, 'update']);
-    Route::delete('/cars/{id}', [CarController::class, 'destroy']);
+    Route::put('/cars/{car}', [CarController::class, 'update']);
+    Route::delete('/cars/{car}', [CarController::class, 'destroy']);
 
 //    Route::get('/brands', [BrandController::class, 'index']);
 //    Route::get('/brands/{id}', [BrandController::class, 'show']);
