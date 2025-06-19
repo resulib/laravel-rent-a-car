@@ -30,7 +30,7 @@ class CarController extends Controller
 
     public function searchAndFilter(Request $request): JsonResponse
     {
-        return $this->carService->searchAndFilter($request);
+        return $this->carService->searchAndFilterApi($request);
     }
 
 

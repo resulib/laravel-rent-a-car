@@ -4,11 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Constants\ImagePaths;
 use App\Helpers\ImageHelper;
+use App\Http\Requests\StoreBrandRequest;
+use App\Http\Requests\UpdateBrandRequest;
 use App\Models\Brand;
-use Illuminate\Http\Request;
+use App\Services\BrandService;
 
 class BrandController extends Controller
 {
+
+    protected BrandService $brandService;
+
+    public function __construct(BrandService $brandService)
+    {
+        $this->brandService = $brandService;
+    }
+
     public function index()
     {
         $brands = Brand::withCount('models')->paginate(10);
@@ -20,19 +30,9 @@ class BrandController extends Controller
         return view('admin.brand.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreBrandRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'is_active' => 'in:0,1',
-
-        ]);
-
-        $brand = new Brand();
-        $brand->name = $request->name;
-        $brand->is_active = $request->is_active;
-        $brand->save();
+        $brand = $this->brandService->createBrand($request);
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -46,18 +46,9 @@ class BrandController extends Controller
         return view('admin.brand.edit', compact('brand'));
     }
 
-    public function update(Request $request, Brand $brand)
+    public function update(UpdateBrandRequest $request, Brand $brand)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'is_active' => 'required|in:0,1',
-            'image' => 'nullable|image|mimes:png|max:2048',
-        ]);
-
-        $brand->update([
-            'name' => $request->name,
-            'is_active' => $request->is_active,
-        ]);
+        $brand = $this->brandService->updateBrand($request, $brand);
 
         if ($request->hasFile('image')) {
             $filename = strtolower($brand->id . ImagePaths::EXTENSION);
@@ -73,7 +64,7 @@ class BrandController extends Controller
 
     public function destroy(Brand $brand)
     {
-        $brand->delete();
+        $this->brandService->deleteBrand($brand);
         return redirect()->route('admin.brand.index')->with('success', 'Brand deleted successfully!');
     }
 }

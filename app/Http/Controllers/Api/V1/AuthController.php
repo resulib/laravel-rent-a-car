@@ -20,9 +20,7 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $credentials = $request->only('email', 'password');
-
-        return $this->authService->login($credentials);
+        return $this->authService->login($request);
     }
 
     public function logout(Request $request)

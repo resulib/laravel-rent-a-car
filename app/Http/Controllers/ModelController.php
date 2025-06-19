@@ -2,43 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Brand;
+use App\Http\Requests\StoreCarModelRequest;
+use App\Http\Requests\UpdateCarModelRequest;
 use App\Models\CarModel;
+use App\Services\BrandService;
+use App\Services\CarModelService;
 use Illuminate\Http\Request;
 
 class ModelController extends Controller
 {
+
+    protected CarModelService $carModelService;
+    protected BrandService $brandService;
+
+    public function __construct(CarModelService $carModelService, BrandService $brandService)
+    {
+        $this->carModelService = $carModelService;
+        $this->brandService = $brandService;
+    }
+
     public function index()
     {
-        $models = CarModel::paginate(10);
+        $models = $this->carModelService->getAll();
         return view('admin.model.index', compact('models'));
     }
 
     public function modelsByBrand(Request $request)
     {
-        $models = CarModel::where('brand_id', $request->brand_id)->get();
+        $models = $this->carModelService->getCarModelByBrandId($request->brand_id);
         return response()->json($models);
     }
 
     public function create()
     {
-        $brands = Brand::where('is_active', '1')->get();
+        $brands = $this->brandService->getActiveBrands();
         return view('admin.model.create', compact('brands'));
     }
 
-    public function store(Request $request)
+    public function store(StoreCarModelRequest $request)
     {
-        $request->validate([
-            'name' => 'string|required|max:255',
-            'brand_id' => 'numeric|required',
-            'is_active' => 'in:0,1'
-        ]);
 
-        $model = new CarModel();
-        $model->name = $request->name;
-        $model->brand_id = $request->brand_id;
-        $model->is_active = $request->is_active;
-
+        $model = $this->carModelService->createCarModel($request);
         if ($model->save()) {
             return redirect(route('admin.model.index'))->with('success', 'Model created successfully');
         }
@@ -47,28 +51,19 @@ class ModelController extends Controller
 
     public function edit(CarModel $model)
     {
-        $brands = Brand::where('is_active', '1')->get();
+        $brands = $this->brandService->getActiveBrands();
         return view('admin.model.edit', compact('model', 'brands'));
     }
 
-    public function update(Request $request, CarModel $model)
+    public function update(UpdateCarModelRequest $request, CarModel $model)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'is_active' => 'required|in:0,1',
-        ]);
-
-        $model->update([
-            'name' => $request->name,
-            'brand_id' => $request->brand_id,
-            'is_active' => $request->is_active,
-        ]);
+        $this->carModelService->updateCarModel($request, $model);
         return redirect()->route('admin.model.index', $model)->with('success', 'Brand updated successfully!');
     }
 
     public function destroy(CarModel $model)
     {
-        $model->delete();
+        $this->carModelService->deleteCarModel($model);
         return redirect()->route('admin.model.index')->with('success', 'Model deleted successfully!');
     }
 }

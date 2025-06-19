@@ -21,7 +21,25 @@ class CarService
         return $car;
     }
 
-    public function searchAndFilter(Request $request)
+    public function getCarBySlug($slug): Car
+    {
+        return Car::where('slug', $slug)->firstOrFail();
+    }
+
+    public function getRelatedCars(Car $car, int $count = 4)
+    {
+        return Car::where('id', '!=', $car->id)
+            ->inRandomOrder()
+            ->take($count)
+            ->get();
+    }
+
+    public function getRandomCars(int $count = 8)
+    {
+        return Car::inRandomOrder()->take($count)->get();
+    }
+
+    public function searchAndFilterApi(Request $request)
     {
         $query = Car::query()->with(['model.brand']);
 
@@ -80,6 +98,57 @@ class CarService
                 'last_page' => $cars->lastPage(),
             ]
         ]);
+    }
+
+    public function searchAndFilter(Request $request)
+    {
+        $query = Car::query()->with(['model.brand']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('model', function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                        ->where('is_active', 1);
+                })->orWhereHas('model.brand', function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                        ->where('is_active', 1);
+                });
+            });
+        }
+
+        if ($request->filled('brand')) {
+            $query->whereHas('model.brand', function ($q) use ($request) {
+                $q->where('id', $request->brand)
+                    ->where('is_active', 1);
+            });
+        }
+
+        if ($request->filled('fuel_type')) {
+            $query->where('fuel_type', $request->fuel_type);
+        }
+
+        if ($request->filled('transmission')) {
+            $query->where('transmission', $request->transmission);
+        }
+
+        if ($request->filled('year')) {
+            $query->where('year', $request->year);
+        }
+
+        if ($request->filled('min_price')) {
+            $query->where('price_per_day', '>=', $request->min_price);
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price_per_day', '<=', $request->max_price);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        return $query->latest()->paginate(8);
     }
 
     public function createCar(StoreCarRequest $request)

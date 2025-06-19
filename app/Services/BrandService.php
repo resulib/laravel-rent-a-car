@@ -14,6 +14,11 @@ class BrandService
         return Brand::paginate(10);
     }
 
+    public function getActiveBrands(bool $is_active = true)
+    {
+        return Brand::where('is_active', $is_active)->get();
+    }
+
     public function getBrand(Brand $brand): Brand
     {
         return $brand;

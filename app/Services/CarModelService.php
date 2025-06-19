@@ -19,6 +19,11 @@ class CarModelService
         return $model;
     }
 
+    public function getCarModelByBrandId($brandId)
+    {
+        return CarModel::where('brand_id', $brandId)->get();
+    }
+
     public function createCarModel(StoreCarModelRequest $request): CarModel
     {
         return CarModel::create($request->validated());

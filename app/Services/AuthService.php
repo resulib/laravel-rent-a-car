@@ -6,14 +6,14 @@ use App\Helpers\ApiResponse;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
 class AuthService
 {
 
-    public function login(array $credentials):JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
+        $credentials = $request->only('email', 'password');
 
         if (!Auth::attempt($credentials)) {
             return ApiResponse::error("Invalid credentials.", 401);
